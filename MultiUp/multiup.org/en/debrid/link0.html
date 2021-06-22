@@ -756,9 +756,93 @@ MultiUp.org - Mass Upload : a free service, funded entirely by advertising<br />
                 }
             });
 
-            
+                                    
+                                    
+            var notice = new PNotify({
+                title: '19/06/21 14:45:12',
+                text: '<span class="message" message-id="139622">Congratulations! Your premium account has been validated.</span>',
+                hide: false,
+                                addclass: 'notification-primary stack-bottomright',
+                icon: 'fa fa-user',
+                                stack: stack_bottomright,
+                buttons: {
+                    closer_hover: false,
+                    sticker: false
+                },
+                before_close: function(notice, timer_hide) {
+                    var id = notice.text_container.find(".message").attr("message-id");
+
+                    $.post('/ajax/delete-message', {
+                        'id': id
+                    }, function(data) {
+                    });
+                },
+            });
+                        
                                     var timezone = moment.tz.guess();
             Cookies.set('timezone', timezone, { expires: 365, sameSite: 'lax' });
+        });
+    </script>
+<script>
+        $(function() {
+                                    $("#direct-links").on("click mousedown", "a", function () {
+                $(this).addClass("btn-success");
+            });
+
+                        $("button[type=reset]").on("keydown keypress keyup mousedown click mouseup mousedown paste", function () {
+                $("textarea[name=link]").val('');
+                $("input[name=password]").val('');
+            });
+
+                        var timer;
+            $("textarea[name=link],input[name=password],button").on('load change keydown keypress keyup mousedown click mouseup mousedown paste', function() {
+                clearTimeout(timer);
+                var value = $("textarea[name=link]").val();
+                timer = setTimeout(function() { run(value); }, 600);
+
+                function run(valueTextarea) {
+                                        $("#direct-links-list").val("");
+                    $("#direct-links").html("");
+                    $("#direct-links-list").closest(".row").addClass("hidden");
+                    $("#direct-links").closest(".row").addClass("hidden");
+
+                                        var arrayOfLines = valueTextarea.split('\n');
+                    $.each(arrayOfLines, function(index, value) {
+                        if(value) {
+                            var password = $("input[name=password]").val();
+                                                        $("#direct-links-list").closest(".row").removeClass("hidden");
+                            $("#direct-links").closest(".row").removeClass("hidden");
+
+                                                        compatible = false;
+                            $("#list-hosts").find(".host").each(function () {
+                                if (value.toLowerCase().match($(this).attr("host"))) {
+                                    compatible = true;
+                                }
+                            });
+
+                                                                                    if (password.trim().length) {
+                                var linkPremium = "https://debrid.multiup.org/" + btoa(btoa(value.trim())).substring(0, 254 - 1 - password.trim().length) + "/" + btoa(btoa(password.trim()));
+                            } else {
+                                var linkPremium = "https://debrid.multiup.org/" + btoa(btoa(value.trim())).substring(0, 254);
+                            }
+                                                        if(compatible) {
+                                $("#direct-links-list").val( $("#direct-links-list").val() + linkPremium + "\n");
+                                $("#direct-links").append(
+                                    "<a title='" + value + "' target='_blank' class='btn btn-default btn-block text-truncate' style='text-align:left' href='" + linkPremium + "'>" +
+                                    "<span class='text-truncate'><i class='fa fa-fw fa-download'></i> " + value + "</span>" +
+                                    "</a>"
+                                );
+                            } else {
+                                $("#direct-links").append(
+                                    "<a title='" + value + "' target='_blank' disabled class='btn btn-danger btn-block text-truncate' style='text-align:left' href='" + linkPremium + "'>" +
+                                    "<span class='text-truncate'><i class='fa fa-fw fa-close'></i> " + value + "</span>" +
+                                    "</a>"
+                                );
+                            }
+                        }
+                    });
+                }
+            });
         });
     </script>
 </body>
